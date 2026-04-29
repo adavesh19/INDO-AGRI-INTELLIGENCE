@@ -1,0 +1,8 @@
+
+*.xml
+*.pyc
+*.xml
+__pycache__/
+Lib/
+Scripts/
+.server.pid

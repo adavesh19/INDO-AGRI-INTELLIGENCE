@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Market Intelligence - AGRI INTELLIGENCE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --ink:#09131f;--muted:#6f7d8e;--line:rgba(16,185,129,.18);
+      --glass:rgba(255,255,255,.72);--glass-strong:rgba(255,255,255,.88);
+      --green:#10b981;--mint:#ccfbf1;--blue:#2563eb;--cyan:#06b6d4;
+      --gold:#f59e0b;--rose:#e11d48;--violet:#7c3aed;
+      --shadow:0 24px 70px rgba(15,23,42,.14);--r:24px;
+      --f:'Outfit',sans-serif;--fm:'Space Grotesk',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{min-height:100vh;font-family:var(--f);color:var(--ink);overflow-x:hidden;
+      background:
+        radial-gradient(circle at 7% 10%,rgba(16,185,129,.18),transparent 24rem),
+        radial-gradient(circle at 86% 6%,rgba(37,99,235,.15),transparent 28rem),
+        linear-gradient(135deg,#eefdf6 0%,#f8fbff 45%,#fff7ed 100%);
+    }
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+      background-image:linear-gradient(rgba(15,23,42,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.035) 1px,transparent 1px);
+      background-size:38px 38px;mask-image:linear-gradient(to bottom,#000,transparent 90%);
+    }
+    .shell{position:relative;z-index:1}
+    .nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:18px;
+      padding:14px clamp(18px,4vw,54px);background:rgba(255,255,255,.72);backdrop-filter:blur(22px);
+      border-bottom:1px solid rgba(15,23,42,.08)}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+    .brand img{width:42px;height:42px;border-radius:13px;object-fit:cover;box-shadow:0 10px 28px rgba(16,185,129,.22)}
+    .brand b{font-family:var(--fm);font-size:1rem;letter-spacing:.02em}
+    .brand span{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}
+    .navlinks{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .navlinks a,.btn{border:0;text-decoration:none;border-radius:999px;padding:10px 17px;font:700 .78rem var(--f);cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;transition:.25s ease;white-space:nowrap}
+    .navlinks a{background:rgba(255,255,255,.76);color:#334155;border:1px solid rgba(15,23,42,.08)}
+    .navlinks a:hover,.btn:hover{transform:translateY(-2px)}
+    .primary{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;box-shadow:0 16px 34px rgba(37,99,235,.23)}
+    .ghost{background:rgba(255,255,255,.72);color:#0f766e;border:1px solid rgba(16,185,129,.25)}
+    .hero{padding:46px clamp(18px,4vw,54px) 24px;display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch}
+    .panel{background:var(--glass);border:1px solid rgba(255,255,255,.88);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter:blur(26px)}
+    .hero-copy{padding:36px;overflow:hidden;position:relative}
+    .hero-copy:after{content:"";position:absolute;right:-80px;bottom:-90px;width:220px;height:220px;border-radius:50%;
+      background:conic-gradient(from 140deg,var(--green),var(--cyan),var(--blue),var(--gold),var(--green));opacity:.1}
+    h1{font-family:var(--fm);font-size:clamp(2.1rem,5vw,4.8rem);line-height:.96;letter-spacing:0;font-weight:900;max-width:760px}
+    .lead{margin-top:18px;max-width:720px;color:#475569;font-size:1rem;line-height:1.75}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px}
+    .metric{padding:17px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(15,23,42,.06)}
+    .metric b{font-family:var(--fm);font-size:1.45rem;color:#0f766e}
+    .metric span{display:block;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+    .control{padding:24px}
+    .control h2,.section-title{font-family:var(--fm);font-size:1rem;text-transform:uppercase;letter-spacing:.12em;color:#0f766e}
+    .grid-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+    label{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:7px}
+    select{width:100%;appearance:none;border:1px solid rgba(15,23,42,.1);outline:none;border-radius:16px;padding:13px 14px;
+      background:rgba(255,255,255,.82);font:700 .9rem var(--f);color:#0f172a;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+    select:focus{border-color:rgba(16,185,129,.6);box-shadow:0 0 0 4px rgba(16,185,129,.1)}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .livebar{margin-top:18px;padding:14px 16px;border-radius:17px;background:rgba(204,251,241,.62);border:1px solid rgba(16,185,129,.2);
+      font-size:.84rem;color:#0f766e;display:flex;justify-content:space-between;gap:10px}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green);display:inline-block;animation:pulse 1.4s infinite}
+    @keyframes pulse{50%{opacity:.35;transform:scale(.82)}}
+    .wrap{padding:0 clamp(18px,4vw,54px) 48px}
+    .result-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:22px;margin-top:14px}
+    .card{padding:24px;border-radius:var(--r);background:var(--glass-strong);border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow);backdrop-filter:blur(22px)}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .kpi{padding:18px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(236,253,245,.72));border:1px solid rgba(16,185,129,.14)}
+    .kpi small{display:block;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.63rem}
+    .kpi b{display:block;font-family:var(--fm);font-size:1.55rem;margin-top:8px}
+    .crop-cloud{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+    .chip{border:1px solid rgba(16,185,129,.2);background:rgba(236,253,245,.78);color:#0f766e;border-radius:999px;padding:7px 11px;font-weight:800;font-size:.76rem;text-transform:capitalize}
+    .chartbox{height:330px;margin-top:20px}
+    .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    .orbit{position:absolute;right:30px;bottom:28px;width:160px;height:160px;perspective:900px;opacity:.72}
+    .orb-core{position:absolute;inset:34px;border-radius:50%;background:radial-gradient(circle at 28% 22%,#fff,var(--mint) 24%,var(--green) 56%,var(--blue));box-shadow:0 24px 54px rgba(16,185,129,.26);animation:floatCore 6s ease-in-out infinite}
+    .ring{position:absolute;inset:16px;border:2px solid rgba(16,185,129,.28);border-radius:50%;transform:rotateX(68deg);animation:orbit 12s linear infinite}
+    .ring.r2{inset:4px;border-color:rgba(37,99,235,.22);transform:rotateY(70deg);animation-duration:15s}
+    .ring.r3{inset:28px;border-color:rgba(245,158,11,.26);transform:rotateX(58deg) rotateY(28deg);animation-duration:10s}
+    @keyframes orbit{to{rotate:360deg}}
+    @keyframes floatCore{50%{transform:translateY(-10px) scale(1.04)}}
+    .rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+    .rec{padding:12px;border-radius:15px;background:rgba(236,253,245,.74);border:1px solid rgba(16,185,129,.2)}
+    .rec b{text-transform:capitalize}.rec span{display:block;color:#0f766e;font-family:var(--fm);font-weight:800;margin-top:4px}
+    .sell-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    .sell{padding:12px;border-radius:15px;background:rgba(240,249,255,.76);border:1px solid rgba(14,165,233,.2)}
+    .sell b{display:block;color:#075985}.sell span{display:block;font-family:var(--fm);font-weight:800;color:#0f766e;margin-top:4px}
+    .rank{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:12px;border-radius:15px;background:rgba(255,255,255,.68);border:1px solid rgba(15,23,42,.06);margin-top:9px}
+    .rank i{font-style:normal;width:30px;height:30px;border-radius:11px;background:#ecfeff;color:#0369a1;display:grid;place-items:center;font-weight:900}
+    .rank b{text-transform:capitalize}
+    .rank span{font-family:var(--fm);font-weight:800;color:#0f766e}
+    #pdf-report{background:#f8fffb;color:#0f172a}
+    .report-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:1px solid rgba(15,23,42,.08);padding-bottom:18px;margin-bottom:16px}
+    .report-title{font-family:var(--fm);font-size:1.35rem;font-weight:900}
+    .report-sub{color:#64748b;font-size:.85rem;line-height:1.55;margin-top:5px}
+    .loading{opacity:.65;pointer-events:none}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+    @media(max-width:980px){.hero,.result-grid{grid-template-columns:1fr}.metrics,.mini-grid{grid-template-columns:1fr 1fr}.chartbox{height:300px}}
+    @media(max-width:620px){.nav{align-items:flex-start;flex-direction:column}.grid-form,.kpis,.metrics,.mini-grid{grid-template-columns:1fr}.hero-copy,.control,.card{padding:20px}h1{font-size:2.25rem}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <nav class="nav">
+    <a class="brand" href="/">
+      <img src="/static/AgriIntelligenceLogo.png" alt="Agri Intelligence"/>
+      <div><b>AGRI INTELLIGENCE</b><span>Market Intelligence</span></div>
+    </a>
+    <div class="navlinks">
+      <a href="/">Dashboard</a>
+      <a href="/ai-farmer">AI Farmer</a>
+      <a href="/market-intelligence">Price Predictor</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="panel hero-copy">
+      <h1>Real-Time Crop Price Predictor</h1>
+      <p class="lead">Select state, district, taluk, and crop to generate past, present, and future commodity intelligence with smooth analytics and a beautiful PDF report.</p>
+      <div class="orbit" aria-hidden="true"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="orb-core"></div></div>
+      <div class="metrics">
+        <div class="metric"><b>{{ context.commodities|length }}</b><span>Commodities</span></div>
+        <div class="metric"><b>{{ context.locations|length }}</b><span>States</span></div>
+        <div class="metric"><b>{{ context.total_districts }}</b><span>Districts</span></div>
+        <div class="metric"><b><span class="dot"></span></b><span>Live Ready</span></div>
+      </div>
+    </div>
+    <div class="panel control">
+      <h2>Build Your Report</h2>
+      <div class="grid-form">
+        <div><label for="state">State</label><select id="state"></select></div>
+        <div><label for="district">District</label><select id="district"></select></div>
+        <div><label for="taluk">Taluk</label><select id="taluk"></select></div>
+        <div><label for="crop">Crop / Commodity</label><select id="crop"></select></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="run">Generate Predictor</button>
+        <a class="btn ghost" id="pdf" href="/market-report.pdf" download>Download PDF</a>
+      </div>
+      <div class="livebar"><span><span class="dot"></span> Model feed: {{ context.month }}</span><b id="status">Ready</b></div>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="result-grid" id="pdf-report">
+      <section class="card">
+        <div class="report-head">
+          <div>
+            <div class="report-title" id="report-title">Taluk Market Signal</div>
+            <div class="report-sub" id="report-sub">Choose a location and crop to generate the intelligence pack.</div>
+          </div>
+          <img src="/static/AgriIntelligenceLogo.png" alt="" style="width:54px;height:54px;border-radius:16px;object-fit:cover"/>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><small>Present Price</small><b id="present">--</b></div>
+          <div class="kpi"><small>12M Direction</small><b id="direction">--</b></div>
+          <div class="kpi"><small>Best Sell Window</small><b id="high">--</b></div>
+          <div class="kpi"><small>Lowest Window</small><b id="low">--</b></div>
+        </div>
+        <div class="section-title" style="margin-top:22px">Crops Present In This Taluk</div>
+        <div class="crop-cloud" id="local-crops"></div>
+        <div class="section-title" style="margin-top:22px">Regional Commodity Ranking</div>
+        <div id="rankings"></div>
+      </section>
+      <section class="card">
+        <div class="section-title">Past - Present - Future Graph</div>
+        <div class="chartbox"><canvas id="priceChart"></canvas></div>
+        <div class="mini-grid">
+          <div class="kpi"><small>Forecast Average</small><b id="avg">--</b></div>
+          <div class="kpi"><small>Model Crop</small><b id="modelcrop">--</b></div>
+          <div class="kpi"><small>Generated</small><b id="generated">--</b></div>
+        </div>
+        <div class="section-title" style="margin-top:22px">Best Crops Now And Next Season</div>
+        <div class="rec-grid" id="recs"></div>
+        <div class="section-title" style="margin-top:22px">Where To Sell For Higher Amount</div>
+        <div class="sell-grid" id="sell-markets"></div>
+        <p class="report-sub" id="note" style="margin-top:18px"></p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const STATES = {{ context.states | tojson }};
+const ALL_COMMODITIES = {{ context.commodities | tojson }};
+let chart;
+let lastData = null;
+
+const stateEl = document.getElementById('state');
+const districtEl = document.getElementById('district');
+const talukEl = document.getElementById('taluk');
+const cropEl = document.getElementById('crop');
+const statusEl = document.getElementById('status');
+
+function titleCase(value){return String(value||'').replace(/\b\w/g,c=>c.toUpperCase());}
+function money(value){return 'Rs. '+Number(value||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
+function fill(select, values){
+  select.innerHTML = values.map(v=>`<option value="${v}">${titleCase(v)}</option>`).join('');
+}
+async function fetchOptions(params={}){
+  const qs = new URLSearchParams(params);
+  const res = await fetch('/api/location-options?'+qs.toString());
+  return await res.json();
+}
+async function refreshDistricts(){
+  const data = await fetchOptions({state:stateEl.value});
+  fill(districtEl, data.districts || []);
+  await refreshTaluks();
+}
+async function refreshTaluks(){
+  const data = await fetchOptions({state:stateEl.value,district:districtEl.value});
+  fill(talukEl, data.taluks || []);
+  await refreshCrops();
+}
+async function refreshCrops(){
+  const data = await fetchOptions({state:stateEl.value,district:districtEl.value,taluk:talukEl.value});
+  fill(cropEl, data.crops || ALL_COMMODITIES);
+}
+function setLoading(isLoading){
+  document.body.classList.toggle('loading', isLoading);
+  statusEl.textContent = isLoading ? 'Generating' : 'Ready';
+}
+async function loadMarket(){
+  setLoading(true);
+  const qs = new URLSearchParams({state:stateEl.value,district:districtEl.value,taluk:talukEl.value,crop:cropEl.value});
+  const res = await fetch('/api/market-intelligence?'+qs.toString());
+  const data = await res.json();
+  setLoading(false);
+  if(!data.ok){statusEl.textContent='Error';return;}
+  lastData = data;
+  render(data);
+}
+function render(data){
+  const loc = [data.taluk, data.district, data.state].filter(Boolean).join(', ');
+  document.getElementById('report-title').textContent = titleCase(data.crop)+' Market Intelligence';
+  document.getElementById('report-sub').textContent = loc+' | Past, present and 12-month future predictor';
+  document.getElementById('present').textContent = money(data.series.present.price);
+  document.getElementById('direction').textContent = (data.series.change >= 0 ? '+' : '') + data.series.change + '%';
+  document.getElementById('direction').style.color = data.series.change >= 0 ? '#0f766e' : '#e11d48';
+  document.getElementById('high').textContent = data.series.high.label+' | '+money(data.series.high.price);
+  document.getElementById('low').textContent = data.series.low.label+' | '+money(data.series.low.price);
+  document.getElementById('avg').textContent = money(data.series.avg_future);
+  document.getElementById('modelcrop').textContent = titleCase(data.series.model_crop);
+  document.getElementById('generated').textContent = data.generated_at.split(',')[0];
+  document.getElementById('note').textContent = data.note;
+  document.getElementById('local-crops').innerHTML = data.local_crops.map(c=>`<span class="chip">${titleCase(c)}</span>`).join('');
+  document.getElementById('rankings').innerHTML = data.rankings.slice(0,10).map((r,i)=>
+    `<div class="rank"><i>${i+1}</i><b>${titleCase(r.name)}${r.is_local?' <small style="color:#0f766e">local</small>':''}</b><span>${money(r.price)}</span></div>`
+  ).join('');
+  document.getElementById('recs').innerHTML = data.recommendations.slice(0,6).map((r,i)=>
+    `<div class="rec"><b>${i+1}. ${titleCase(r.name)}</b><span>${r.score}% fit | ${money(r.future_price)}</span><small>${data.next_season} outlook, best sell ${r.best_month}</small></div>`
+  ).join('');
+  document.getElementById('sell-markets').innerHTML = data.sell_markets.slice(0,6).map((r,i)=>
+    `<div class="sell"><b>${i+1}. ${titleCase(r.taluk)}</b><small>${titleCase(r.district)}, ${titleCase(r.state)}</small><span>${money(r.price)}</span><small>Best future: ${r.best_month} at ${money(r.best_price)}</small></div>`
+  ).join('');
+  updatePdfLink();
+
+  const labels = [...data.series.past.map(x=>x.label), data.series.present.label, ...data.series.future.map(x=>x.label)];
+  const values = [...data.series.past.map(x=>x.price), data.series.present.price, ...data.series.future.map(x=>x.price)];
+  const presentIndex = data.series.past.length;
+  const colors = values.map((_,i)=>i<presentIndex?'rgba(124,58,237,.85)':i===presentIndex?'rgba(245,158,11,.95)':'rgba(16,185,129,.9)');
+  if(chart) chart.destroy();
+  const ctx = document.getElementById('priceChart');
+  chart = new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{
+      label:titleCase(data.crop)+' price',
+      data:values,
+      borderColor:'#10b981',
+      segment:{borderColor:seg=>seg.p0DataIndex<presentIndex?'#7c3aed':seg.p0DataIndex===presentIndex?'#f59e0b':'#10b981'},
+      backgroundColor:context=>{
+        const g=context.chart.ctx.createLinearGradient(0,0,0,340);
+        g.addColorStop(0,'rgba(16,185,129,.24)');g.addColorStop(1,'rgba(16,185,129,.02)');return g;
+      },
+      pointBackgroundColor:colors,pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4,pointHoverRadius:8,
+      borderWidth:3,fill:true,tension:.42
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:350},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#0f172a',cornerRadius:13,padding:12,callbacks:{label:c=>' '+money(c.parsed.y)}}},
+      scales:{x:{grid:{color:'rgba(15,23,42,.05)'},ticks:{color:'#64748b',font:{family:'Space Grotesk',size:10},maxRotation:45}},
+        y:{grid:{color:'rgba(15,23,42,.06)'},ticks:{color:'#64748b',font:{family:'Space Grotesk',size:10},callback:v=>'Rs. '+Number(v).toLocaleString('en-IN')}}}
+    }
+  });
+  statusEl.textContent='Updated';
+}
+async function downloadPDF(){
+  if(!lastData) await loadMarket();
+  updatePdfLink();
+}
+function updatePdfLink(){
+  const qs = new URLSearchParams({state:stateEl.value,district:districtEl.value,taluk:talukEl.value,crop:cropEl.value});
+  document.getElementById('pdf').href = '/market-report.pdf?' + qs.toString();
+}
+
+fill(stateEl, STATES);
+refreshDistricts().then(loadMarket);
+stateEl.addEventListener('change', refreshDistricts);
+districtEl.addEventListener('change', refreshTaluks);
+talukEl.addEventListener('change', refreshCrops);
+cropEl.addEventListener('change', updatePdfLink);
+document.getElementById('run').addEventListener('click', loadMarket);
+document.getElementById('pdf').addEventListener('mouseenter', downloadPDF);
+</script>
+</body>
+</html>

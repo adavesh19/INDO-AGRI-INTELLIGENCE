@@ -1,0 +1,7 @@
+flask
+scikit-learn
+numpy
+pandas
+flask-cors
+requests
+reportlab
